@@ -1,15 +1,22 @@
 // Instantiate Express and the application - DO NOT MODIFY
 const express = require('express');
 const app = express();
+const sqlite = require("sqlite3")
 
-// Database file - DO NOT MODIFY
-// DO NOT DO THIS - USE .env VARIABLE INSTEAD
-const DATA_SOURCE = 'app.db';
+require("dotenv").config()
+
+
+
 
 /**
  * Step 1 - Connect to the database
  */
 // Your code here
+const db = new sqlite.Database(process.env.DATA_SOURCE, sqlite.OPEN_READWRITE, (err) => {
+    if (err) return console.log(err)
+    console.log("db connected")
+} )
+
 
 // Express using json - DO NOT MODIFY
 app.use(express.json());
@@ -30,17 +37,27 @@ app.get('/colors/:id', (req, res, next) => {
      * STEP 2A - SQL Statement
      */
     // Your code here
+    const sql = `SELECT * from colors where id = ?`
 
     /**
      * STEP 2B - SQL Parameters
      */
     // Your code here
+    const params = [req.params.id]
+
 
     /**
      * STEP 2C - Call database function
      *  - return response
      */
     // Your code here
+    db.get(sql, params, (err, row) => {
+        if (err) {
+            next(err)
+        }else{
+            res.json(row)
+        }
+    })
 });
 
 // Add color
